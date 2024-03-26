@@ -73,6 +73,20 @@ def clear_users():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+        # Define a route to reset the database
+@app.route('/reset_database', methods=['POST'])
+def reset_database():
+    try:
+        # Drop all tables
+        db.drop_all()
+
+        # Recreate all tables
+        db.create_all()
+
+        return jsonify({'message': 'Database reset successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/')
 def index():
     return 'Hello, World!'
