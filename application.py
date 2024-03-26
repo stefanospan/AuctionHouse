@@ -12,11 +12,12 @@ app = Flask(__name__)
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
+database_url = os.environ.get('DATABASE_URL')
+logging.info(f'DATABASE_URL: {database_url}')  # Log the retrieved DATABASE_URL
+
 # Configure the database URI from the environment variable
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 
-database_url = os.environ.get('DATABASE_URL')
-logging.info(f'DATABASE_URL: {database_url}')  # Log the retrieved DATABASE_URL
 
 # Suppress deprecation warnings
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
