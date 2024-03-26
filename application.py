@@ -16,7 +16,7 @@ database_url = os.environ.get('DATABASE_URL')
 logging.info(f'DATABASE_URL: {database_url}')  # Log the retrieved DATABASE_URL
 
 # Configure the database URI from the environment variable
-#app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 
 
 # Suppress deprecation warnings
