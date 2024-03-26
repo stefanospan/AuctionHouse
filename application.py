@@ -26,15 +26,15 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # Define a simple model
-#class User(db.Model):
-#    id = db.Column(db.Integer, primary_key=True)
-#    username = db.Column(db.String(80), unique=True, nullable=False)
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
 
-#    def __repr__(self):
-#        return '<User %r>' % self.username
+    def __repr__(self):
+        return '<User %r>' % self.username
 
 # Create the database tables (if they don't exist)
-#db.create_all()
+db.create_all()
 
 @app.route('/')
 def index():
