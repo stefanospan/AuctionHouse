@@ -62,6 +62,16 @@ def add_user():
 
     return jsonify({'message': 'User added successfully', 'username': username}), 201
 
+# Define a route to clear the user database
+@app.route('/users/clear', methods=['DELETE'])
+def clear_users():
+    try:
+        # Delete all records from the User table
+        db.session.query(User).delete()
+        db.session.commit()
+        return jsonify({'message': 'All users deleted successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/')
 def index():
