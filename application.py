@@ -23,7 +23,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize SQLAlchemy
-#db = SQLAlchemy(app)
+db = SQLAlchemy(app)
 
 # Define a simple model
 #class User(db.Model):
