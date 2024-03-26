@@ -87,6 +87,27 @@ def reset_database():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+        # Define a route for user login
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    if 'username' not in data or 'password' not in data:
+        return jsonify({'error': 'Both username and password are required'}), 400
+
+    username = data['username']
+    password = data['password']
+
+    # Check if the user exists
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        return jsonify({'error': 'Invalid username or password'}), 401
+
+    # Check if the password is correct
+    if user.password != password:
+        return jsonify({'error': 'Invalid username or password'}), 401
+
+    return jsonify({'message': 'Login successful', 'username': username}), 200
+
 @app.route('/')
 def index():
     return 'Hello, World!'
