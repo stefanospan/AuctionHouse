@@ -51,8 +51,12 @@ def add_user():
     if 'username' not in data:
         return jsonify({'error': 'Username is required'}), 400
 
+    if 'password' not in data:
+        return jsonify({'error': 'Password is required'}), 400
+
     username = data['username']
-    new_user = User(username=username)
+    password = data['password']
+    new_user = User(username=username, password=password)
     db.session.add(new_user)
     db.session.commit()
 
