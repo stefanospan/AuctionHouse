@@ -1,6 +1,10 @@
 from flask import Flask, send_from_directory
+import logging
 from flask_sqlalchemy import SQLAlchemy
 import os
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)  # Set logging level to INFO
 
 app = Flask(__name__)
 
@@ -10,6 +14,9 @@ def favicon():
 
 # Configure the database URI from the environment variable
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+
+database_url = os.environ.get('DATABASE_URL')
+logging.info(f'DATABASE_URL: {database_url}')  # Log the retrieved DATABASE_URL
 
 # Suppress deprecation warnings
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
