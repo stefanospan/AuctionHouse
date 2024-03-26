@@ -36,6 +36,28 @@ class User(db.Model):
 # Create the database tables (if they don't exist)
 db.create_all()
 
+# Define a route to return all users as JSON
+@app.route('/users', methods=['GET'])
+def get_users():
+    all_users = User.query.all()
+    users_list = [{'id': user.id, 'username': user.username} for user in all_users]
+    return jsonify(users_list)
+
+# Define a route to add a new user
+@app.route('/users', methods=['POST'])
+def add_user():
+    data = request.get_json()
+    if 'username' not in data:
+        return jsonify({'error': 'Username is required'}), 400
+
+    username = data['username']
+    new_user = User(username=username)
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({'message': 'User added successfully', 'username': username}), 201
+
+
 @app.route('/')
 def index():
     return 'Hello, World!'
