@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)  # Set logging level to INFO
+logging.basicConfig(level=logging.DEBUG)  # Set logging level to INFO
 
 app = Flask(__name__)
 
