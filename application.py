@@ -1,5 +1,6 @@
 from flask import Flask, send_from_directory
 import logging
+import psycopg2
 from flask_sqlalchemy import SQLAlchemy
 import os
 
