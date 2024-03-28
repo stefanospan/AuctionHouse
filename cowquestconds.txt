@@ -1,0 +1,5 @@
+extract with specific or list of items
+custom condition/code
+kill
+kill with weapon
+Go to location
