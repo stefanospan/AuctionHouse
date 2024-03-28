@@ -51,6 +51,7 @@ class Auction(db.Model):
     user_id = db.Column(db.Integer, nullable=False)  # User who created the auction
     item_id = db.Column(db.Integer, nullable=False)
     start_price = db.Column(db.Float, nullable=False)
+    current_bid = db.Column(db.Float, nullable=True)  # Add current_bid attribute
     quantity = db.Column(db.Integer, nullable=False, default=1)  # Amount of items in auction
     expiry_time = db.Column(db.DateTime, nullable=False)
 
@@ -146,6 +147,7 @@ def create_bid():
             user_id=user_id,
             item_id=item_id,
             start_price=start_price,
+            current_bid=start_price,  # Initialize current_bid with start_price
             quantity=quantity,
             expiry_time=expiry_time
         )
