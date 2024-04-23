@@ -7,7 +7,10 @@ from celery import Celery
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-@Celery.task
+# Create Celery instance
+celery = Celery(__name__)
+
+@celery.task
 def process_expired_auctions():
     """
     Task to process expired auctions.
@@ -54,7 +57,7 @@ def process_expired_auctions():
     return 'Expired auctions processed successfully.'
 
 # Define the Celery beat schedule
-Celery.conf.beat_schedule = {
+celery.conf.beat_schedule = {
     'process-expired-auctions': {
         'task': 'auction_tasks.process_expired_auctions',  # Specify the task function
         'schedule': 5.0,  # Run every 5 seconds
