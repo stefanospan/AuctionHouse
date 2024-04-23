@@ -111,6 +111,20 @@ def clear_auctions():
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
+# Route to delete the entire auction database
+@app.route('/auctions/delete_database', methods=['DELETE'])
+def delete_auction_database():
+    try:
+        # Drop all tables
+        db.drop_all()
+
+        # Delete the database itself
+        db.engine.execute(f"DROP DATABASE {db.engine.url.database}")
+
+        return jsonify({'message': 'Auction database deleted successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 # Route to set currency for a user
 @app.route('/users/<int:user_id>/currency/set', methods=['POST'])
 def set_currency(user_id):
