@@ -345,7 +345,7 @@ def remove_item_from_inventory(user_id, item_id):
         return jsonify({'error': 'Item not found in user inventory'}), 404
 
 # Route to update entire inventory of a user
-@app.route('/users/<int:user_id>/inventory', methods=['PUT'])
+@app.route('/users/<int:user_id>/inventory/update', methods=['POST'])
 def update_user_inventory(user_id):
     data = request.get_json()
     if not data:
