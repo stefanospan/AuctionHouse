@@ -283,35 +283,39 @@ def get_user_inventory(user_id):
     items = [{'item_id': item.item_id, 'quantity': item.quantity} for item in inventory]
     return jsonify(items=items)
 
-# Route to add item to user inventory
+# Route to update entire inventory of a user
 @app.route('/users/<int:user_id>/inventory', methods=['POST'])
-def add_item_to_inventory(user_id):
+def update_user_inventory(user_id):
     data = request.get_json()
-    if 'item_id' not in data:
-        return jsonify({'error': 'Item ID is required'}), 400
 
-    if 'quantity' not in data:
-        return jsonify({'error': 'Quantity is required'}), 400
-
-    item_id = data['item_id']
-    quantity = data['quantity']
+    if not data or 'items' not in data:
+        return jsonify({'error': 'No items provided'}), 400
 
     # Check if the user exists
     user = User.query.get_or_404(user_id)
 
-    # Add item to user inventory
-    user_inventory = UserInventory.query.filter_by(user_id=user_id, item_id=item_id).first()
-    if user_inventory:
-        # Item already exists in user inventory, update quantity
-        user_inventory.quantity += quantity
-    else:
-        # Item doesn't exist in user inventory, create new entry
-        user_inventory = UserInventory(user_id=user_id, item_id=item_id, quantity=quantity)
-        db.session.add(user_inventory)
+    try:
+        # Clear user's current inventory
+        UserInventory.query.filter_by(user_id=user_id).delete()
 
-    db.session.commit()
+        # Add items from provided data
+        items = data['items']
+        for item_data in items:
+            if 'item_id' not in item_data or 'quantity' not in item_data:
+                return jsonify({'error': 'Item ID and quantity are required for each item'}), 400
 
-    return jsonify({'message': 'Item added to inventory successfully', 'item_id': item_id, 'quantity': quantity}), 201
+            item_id = item_data['item_id']
+            quantity = item_data['quantity']
+
+            # Add item to user inventory
+            user_inventory = UserInventory(user_id=user_id, item_id=item_id, quantity=quantity)
+            db.session.add(user_inventory)
+
+        db.session.commit()
+        return jsonify({'message': 'User inventory updated successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
 # Route to remove item(s) from user inventory
 @app.route('/users/<int:user_id>/inventory/<int:item_id>', methods=['DELETE'])
