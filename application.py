@@ -99,6 +99,18 @@ def remove_currency(user_id):
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
+# Route to completely destroy the auctions database
+@app.route('/auctions/clear', methods=['DELETE'])
+def clear_auctions():
+    try:
+        # Delete all records from the Auction table
+        db.session.query(Auction).delete()
+        db.session.commit()
+        return jsonify({'message': 'All auctions deleted successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
 # Route to set currency for a user
 @app.route('/users/<int:user_id>/currency/set', methods=['POST'])
 def set_currency(user_id):
