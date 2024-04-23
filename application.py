@@ -216,6 +216,31 @@ def place_bid(auction_id):
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
+# Route to retrieve all auctions
+@app.route('/auctions', methods=['GET'])
+def get_auctions():
+    try:
+        # Retrieve all auctions from the database
+        all_auctions = Auction.query.all()
+
+        # Prepare the response data
+        auctions_list = []
+        for auction in all_auctions:
+            auction_data = {
+                'id': auction.id,
+                'user_id': auction.user_id,
+                'item_id': auction.item_id,
+                'start_price': auction.start_price,
+                'current_bid': auction.current_bid,
+                'quantity': auction.quantity,
+                'expiry_time': auction.expiry_time.strftime('%Y-%m-%d %H:%M:%S')
+            }
+            auctions_list.append(auction_data)
+
+        return jsonify(auctions_list), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 # Routes for user inventory
 @app.route('/users/<int:user_id>/inventory', methods=['GET'])
 def get_user_inventory(user_id):
