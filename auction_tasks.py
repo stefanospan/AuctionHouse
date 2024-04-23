@@ -3,7 +3,6 @@ import logging
 from application import db, Auction, User, UserInventory  # Adjust import based on your project structure
 from celery import Celery
 
-from .celery_config import celery
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
