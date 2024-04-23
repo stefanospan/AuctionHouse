@@ -155,8 +155,19 @@ def create_bid():
     quantity = data.get('quantity', 1)  # Default to 1 item if quantity is not provided
     expiry_hours = data.get('expiry_hours')  # Expiry time in hours
 
-    if not all([user_id, item_id, start_price, expiry_hours]):
-        return jsonify({'error': 'Incomplete data provided'}), 400
+    errors = {}
+
+    if user_id is None:
+        errors['user_id'] = 'User ID is missing'
+    if item_id is None:
+        errors['item_id'] = 'Item ID is missing'
+    if start_price is None:
+        errors['start_price'] = 'Start price is missing'
+    if expiry_hours is None:
+        errors['expiry_hours'] = 'Expiry hours are missing'
+
+    if errors:
+        return jsonify({'error': errors}), 400
 
     try:
         # Check if the creator has enough quantity of the item
