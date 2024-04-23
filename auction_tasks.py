@@ -1,8 +1,13 @@
 from datetime import datetime, timedelta
+import logging
 from application import db, Auction, User, UserInventory  # Adjust import based on your project structure
 from celery import Celery
 
 from .celery_config import celery
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 @celery.task
 def process_expired_auctions():
@@ -11,6 +16,7 @@ def process_expired_auctions():
     """
     current_time = datetime.now()
     expired_auctions = Auction.query.filter(Auction.expiry_time <= current_time).all()
+    logger.info(f"Found {len(expired_auctions)} expired auctions.")
 
     for auction in expired_auctions:
         if auction.current_bid is not None:
@@ -30,6 +36,8 @@ def process_expired_auctions():
 
             db.session.delete(auction)
             db.session.commit()
+            logger.info(f"Auction with bids processed successfully. Creator: {creator.username}, Bidder: {bidder.username}")
+
         else:
             # Process auction with no bids
             creator = User.query.get(auction.user_id)
@@ -43,6 +51,7 @@ def process_expired_auctions():
 
             db.session.delete(auction)
             db.session.commit()
+            logger.info(f"Auction with no bids processed successfully. Creator: {creator.username}")
 
     return 'Expired auctions processed successfully.'
 
