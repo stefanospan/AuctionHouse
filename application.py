@@ -280,8 +280,8 @@ def get_auctions():
 def get_user_inventory(user_id):
     user = User.query.get_or_404(user_id)
     inventory = UserInventory.query.filter_by(user_id=user_id).all()
-    inventory_list = [{'item_id': item.item_id, 'quantity': item.quantity} for item in inventory]
-    return jsonify(inventory_list)
+    items = [{'item_id': item.item_id, 'quantity': item.quantity} for item in inventory]
+    return jsonify(items=items)
 
 # Route to add item to user inventory
 @app.route('/users/<int:user_id>/inventory', methods=['POST'])
