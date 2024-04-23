@@ -8,6 +8,9 @@ from celery_config import celery
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
+logging.info("Auction tasks worker has started")
+
 @celery.task
 def process_expired_auctions():
     """

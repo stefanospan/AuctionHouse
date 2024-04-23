@@ -54,6 +54,7 @@ class Auction(db.Model):
     current_bid = db.Column(db.Float, nullable=False)  # Add current_bid attribute
     quantity = db.Column(db.Integer, nullable=False, default=1)  # Amount of items in auction
     expiry_time = db.Column(db.DateTime, nullable=False)
+    current_bidder_id = db.Column(db.Integer, nullable=True)
 
     def __repr__(self):
         return f'<Auction {self.id}>'
@@ -232,7 +233,7 @@ def place_bid(auction_id):
 
         # Reduce bidder's currency and update the auction with the new bid
         bidder.currency -= amount
-        auction.user_id = bidder_id
+        auction.current_bidder_id = bidder_id
         auction.current_bid = amount
         db.session.commit()
 
