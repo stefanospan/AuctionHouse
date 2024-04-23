@@ -445,7 +445,9 @@ def login():
     if user.password != password:
         return jsonify({'error': 'Invalid username or password'}), 401
 
-    return jsonify({'message': 'Login successful', 'username': username}), 200
+    id = user.id
+
+    return jsonify({'message': 'Login successful', 'username': username, 'user_id': id}), 200
 
 @app.route('/')
 def index():
