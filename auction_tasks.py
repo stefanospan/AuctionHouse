@@ -49,7 +49,7 @@ def process_expired_auctions():
 # Define the Celery beat schedule
 celery.conf.beat_schedule = {
     'process-expired-auctions': {
-        'task': 'application.process_expired_auctions',  # Specify the task function
+        'task': 'auction_tasks.process_expired_auctions',  # Specify the task function
         'schedule': 5.0,  # Run every 5 seconds
     },
 }
