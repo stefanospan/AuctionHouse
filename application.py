@@ -80,6 +80,14 @@ def add_currency(user_id):
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
+@app.route('/users/<int:user_id>/currency', methods=['GET'])
+def get_currency(user_id):
+    try:
+        user = User.query.get_or_404(user_id)
+        return jsonify({'currency': user.currency}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 # Route to remove currency from a user
 @app.route('/users/<int:user_id>/currency/remove', methods=['POST'])
 def remove_currency(user_id):
