@@ -84,7 +84,8 @@ def get_user_auction_rewards(user_id):
         for auction in completed_auctions:
             auction_reward = {
                 'item_id': auction.item_id,
-                'quantity': auction.quantity
+                'quantity': auction.quantity,
+                'reward_id': auction.id
             }
             auction_rewards.append(auction_reward)
 
