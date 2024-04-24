@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import logging
-from application import db, Auction, User, UserInventory  # Adjust import based on your project structure
+from application import db, Auction, User, UserInventory, CompletedAuction  # Adjust import based on your project structure
 from celery import Celery
 from celery_config import celery
 
