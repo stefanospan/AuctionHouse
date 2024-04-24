@@ -308,7 +308,10 @@ def get_auctions():
             }
             auctions_list.append(auction_data)
 
-        return jsonify(auctions_list), 200
+        # Wrap the list of auctions in a dictionary with a key named "auctions"
+        response_data = {'auctions': auctions_list}
+
+        return jsonify(response_data), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
