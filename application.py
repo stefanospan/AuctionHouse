@@ -359,7 +359,10 @@ def update_user_inventory(user_id):
         UserInventory.query.filter_by(user_id=user_id).delete()
 
         # Add items from provided data
-        for item_data in data:
+        if 'items' not in data or not isinstance(data['items'], list):
+            return jsonify({'error': 'Invalid or missing items field in data'}), 400
+
+        for item_data in data['items']:
             if 'item_id' not in item_data or 'quantity' not in item_data:
                 return jsonify({'error': 'Item ID and quantity are required for each item'}), 400
 
