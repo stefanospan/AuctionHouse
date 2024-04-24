@@ -59,8 +59,45 @@ class Auction(db.Model):
     def __repr__(self):
         return f'<Auction {self.id}>'
 
+# Define CompletedAuction model
+class CompletedAuction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    winner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    item_id = db.Column(db.Integer, nullable=False)
+    quantity = db.Column(db.Integer, nullable=False, default=1)  # Quantity of the item won
+
+    def __repr__(self):
+        return f'<CompletedAuction {self.id}>'
+
 # Create the database tables (if they don't exist)
 db.create_all()
+
+@app.route('/process_auction_reward/<int:auction_id>', methods=['POST'])
+def process_auction_reward(auction_id):
+    try:
+        # Retrieve the completed auction from the database
+        completed_auction = CompletedAuction.query.get_or_404(auction_id)
+
+        # Retrieve the winner and item details
+        winner = User.query.get_or_404(completed_auction.winner_id)
+        item_id = completed_auction.item_id
+        quantity = completed_auction.quantity
+
+        # Add the item and quantity to the winner's inventory
+        winner_inventory = UserInventory.query.filter_by(user_id=winner.id, item_id=item_id).first()
+        if winner_inventory:
+            winner_inventory.quantity += quantity
+        else:
+            winner_inventory = UserInventory(user_id=winner.id, item_id=item_id, quantity=quantity)
+            db.session.add(winner_inventory)
+
+        # Delete the completed auction and auction reward entries from the database
+        db.session.delete(completed_auction)
+        db.session.commit()
+
+        return jsonify({'message': f'Auction reward processed successfully for user {winner.username}'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 # Route to add currency to a user
 @app.route('/users/<int:user_id>/currency/add', methods=['POST'])

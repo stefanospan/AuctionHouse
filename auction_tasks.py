@@ -26,23 +26,24 @@ def process_expired_auctions():
             bidder = User.query.get(auction.current_bidder_id)
             creator = User.query.get(auction.user_id)
 
-            # Transfer item to bidder and currency to creator
-            bidder_inventory = UserInventory.query.filter_by(user_id=bidder.id, item_id=auction.item_id).first()
-            if bidder_inventory:
-                bidder_inventory.quantity += auction.quantity
-            else:
-                bidder_inventory = UserInventory(user_id=bidder.id, item_id=auction.item_id, quantity=auction.quantity)
-                db.session.add(bidder_inventory)
+            # Add completed auction to database
+            completed_auction = CompletedAuction(
+                winner_id=bidder.id,
+                item_id=auction.item_id,
+                quantity=auction.quantity
+            )
+            db.session.add(completed_auction)
 
+            # Add currency to the auction creator
             creator.currency += auction.current_bid
 
             db.session.delete(auction)
             db.session.commit()
             logger.info(f"Auction with bids processed successfully. Creator: {creator.username}, Bidder: {bidder.username}")
-
         else:
             # Process auction with no bids
             creator = User.query.get(auction.user_id)
+
             # Return the item to the creator's inventory
             creator_inventory = UserInventory.query.filter_by(user_id=creator.id, item_id=auction.item_id).first()
             if creator_inventory:
