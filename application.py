@@ -104,14 +104,6 @@ def process_auction_reward(auction_id):
         item_id = completed_auction.item_id
         quantity = completed_auction.quantity
 
-        # Add the item and quantity to the winner's inventory
-        winner_inventory = UserInventory.query.filter_by(user_id=winner.id, item_id=item_id).first()
-        if winner_inventory:
-            winner_inventory.quantity += quantity
-        else:
-            winner_inventory = UserInventory(user_id=winner.id, item_id=item_id, quantity=quantity)
-            db.session.add(winner_inventory)
-
         # Delete the completed auction and auction reward entries from the database
         db.session.delete(completed_auction)
         db.session.commit()
@@ -327,110 +319,6 @@ def get_auctions():
 
         return jsonify(response_data), 200
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-# Routes for user inventory
-@app.route('/users/<int:user_id>/inventory', methods=['GET'])
-def get_user_inventory(user_id):
-    user = User.query.get_or_404(user_id)
-    inventory = UserInventory.query.filter_by(user_id=user_id).all()
-    items = [{'item_id': item.item_id, 'quantity': item.quantity} for item in inventory]
-    return jsonify(items=items)
-
-# Route to add item to user inventory
-@app.route('/users/<int:user_id>/inventory', methods=['POST'])
-def add_item_to_inventory(user_id):
-    data = request.get_json()
-    if 'item_id' not in data:
-        return jsonify({'error': 'Item ID is required'}), 400
-
-    if 'quantity' not in data:
-        return jsonify({'error': 'Quantity is required'}), 400
-
-    item_id = data['item_id']
-    quantity = data['quantity']
-
-    # Check if the user exists
-    user = User.query.get_or_404(user_id)
-
-    # Add item to user inventory
-    user_inventory = UserInventory.query.filter_by(user_id=user_id, item_id=item_id).first()
-    if user_inventory:
-        # Item already exists in user inventory, update quantity
-        user_inventory.quantity += quantity
-    else:
-        # Item doesn't exist in user inventory, create new entry
-        user_inventory = UserInventory(user_id=user_id, item_id=item_id, quantity=quantity)
-        db.session.add(user_inventory)
-
-    db.session.commit()
-
-    return jsonify({'message': 'Item added to inventory successfully', 'item_id': item_id, 'quantity': quantity}), 201
-
-# Route to remove item(s) from user inventory
-@app.route('/users/<int:user_id>/inventory/<int:item_id>', methods=['DELETE'])
-def remove_item_from_inventory(user_id, item_id):
-    data = request.get_json()
-    if 'amount' not in data:
-        return jsonify({'error': 'Amount is required'}), 400
-
-    amount = data['amount']
-
-    # Check if the user exists
-    user = User.query.get_or_404(user_id)
-
-    # Check if the item exists in user inventory
-    user_inventory = UserInventory.query.filter_by(user_id=user_id, item_id=item_id).first()
-    if user_inventory:
-        # Item found, remove specified amount from quantity
-        if user_inventory.quantity > amount:
-            user_inventory.quantity -= amount
-            db.session.commit()
-            return jsonify({'message': f'{amount} item(s) removed from inventory successfully', 'item_id': item_id}), 200
-        elif user_inventory.quantity == amount:
-            # If the quantity matches the amount, delete the entry
-            db.session.delete(user_inventory)
-            db.session.commit()
-            return jsonify({'message': f'All items removed from inventory successfully', 'item_id': item_id}), 200
-        else:
-            return jsonify({'error': 'Amount exceeds the quantity in inventory'}), 400
-    else:
-        # Item not found in user inventory
-        return jsonify({'error': 'Item not found in user inventory'}), 404
-
-# Route to update entire inventory of a user
-@app.route('/users/<int:user_id>/inventory/update', methods=['POST'])
-def update_user_inventory(user_id):
-    data = request.get_json()
-    if not data:
-        return jsonify({'error': 'No data provided'}), 400
-
-    # Check if the user exists
-    user = User.query.get_or_404(user_id)
-
-    try:
-        # Clear user's current inventory
-        UserInventory.query.filter_by(user_id=user_id).delete()
-
-        # Add items from provided data
-        if 'items' not in data or not isinstance(data['items'], list):
-            return jsonify({'error': 'Invalid or missing items field in data'}), 400
-
-        for item_data in data['items']:
-            if 'item_id' not in item_data or 'quantity' not in item_data:
-                return jsonify({'error': 'Item ID and quantity are required for each item'}), 400
-
-            item_id = item_data['item_id']
-            quantity = item_data['quantity']
-
-            # Add item to user inventory
-            user_inventory = UserInventory(user_id=user_id, item_id=item_id, quantity=quantity)
-            db.session.add(user_inventory)
-
-        db.session.commit()
-        return jsonify({'message': 'User inventory updated successfully'}), 200
-    except Exception as e:
-        db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
 # Define a route to return all users as JSON
