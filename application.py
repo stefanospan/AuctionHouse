@@ -116,7 +116,7 @@ def process_auction_reward(auction_id):
         db.session.delete(completed_auction)
         db.session.commit()
 
-        return jsonify({'message': f'Auction reward processed successfully for user {winner.username}'}), 200
+        return jsonify({'message': f'Auction reward processed successfully for user {winner.username}', 'item_id': completed_auction.item_id, 'quantity': completed_auction.quantity}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
