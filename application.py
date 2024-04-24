@@ -237,10 +237,6 @@ def create_bid():
         return jsonify({'error': errors}), 400
 
     try:
-        # Check if the creator has enough quantity of the item
-        creator_inventory = UserInventory.query.filter_by(user_id=user_id, item_id=item_id).first()
-        if creator_inventory is None or creator_inventory.quantity < quantity:
-            return jsonify({'error': 'Creator does not have enough quantity of the item'}), 400
 
         # Calculate expiry time
         current_time = datetime.now()
@@ -255,13 +251,6 @@ def create_bid():
             quantity=quantity,
             expiry_time=expiry_time
         )
-
-        # Reduce quantity from creator's inventory
-        creator_inventory.quantity -= quantity
-
-        # If quantity becomes 0, remove the item completely from the creator's inventory
-        if creator_inventory.quantity == 0:
-            db.session.delete(creator_inventory)
 
         db.session.add(new_auction)
         db.session.commit()
