@@ -21,7 +21,7 @@ def process_expired_auctions():
     logger.info(f"Found {len(expired_auctions)} expired auctions.")
 
     for auction in expired_auctions:
-        if auction.current_bid is not None:
+        if auction.current_bid is not None and auction.current_bidder_id is not None:
             # Process auction with bids
             bidder = User.query.get(auction.current_bidder_id)
             creator = User.query.get(auction.user_id)
