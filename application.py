@@ -72,6 +72,26 @@ class CompletedAuction(db.Model):
 # Create the database tables (if they don't exist)
 db.create_all()
 
+# Route to retrieve auction rewards for a user
+@app.route('/users/<int:user_id>/auction_rewards', methods=['GET'])
+def get_user_auction_rewards(user_id):
+    try:
+        # Retrieve completed auctions for the specified user
+        completed_auctions = CompletedAuction.query.filter_by(winner_id=user_id).all()
+
+        # Prepare the response data
+        auction_rewards = []
+        for auction in completed_auctions:
+            auction_reward = {
+                'item_id': auction.item_id,
+                'quantity': auction.quantity
+            }
+            auction_rewards.append(auction_reward)
+
+        return jsonify({'auction_rewards': auction_rewards}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/process_auction_reward/<int:auction_id>', methods=['POST'])
 def process_auction_reward(auction_id):
     try:
