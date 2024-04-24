@@ -238,6 +238,10 @@ def create_bid():
         # Reduce quantity from creator's inventory
         creator_inventory.quantity -= quantity
 
+        # If quantity becomes 0, remove the item completely from the creator's inventory
+        if creator_inventory.quantity == 0:
+            db.session.delete(creator_inventory)
+
         db.session.add(new_auction)
         db.session.commit()
 
